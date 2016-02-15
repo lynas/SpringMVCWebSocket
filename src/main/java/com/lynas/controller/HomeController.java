@@ -2,8 +2,10 @@ package com.lynas.controller;
 
 import com.lynas.model.User;
 import com.lynas.service.GreeterService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -13,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 public class HomeController {
+
+    @Autowired
+    private SimpMessagingTemplate template;
 
     @RequestMapping(value = "/")
     public String home(){
@@ -26,4 +31,10 @@ public class HomeController {
         return new GreeterService("Hello, " + message.getName() + "!");
     }
 
+    @RequestMapping(value = "/simMessage")
+    public String greeting() throws Exception {
+        template.convertAndSend("/topic/greetings",
+                new GreeterService("Hello, Other!"));
+        return "sample";
+    }
 }
